@@ -2,6 +2,9 @@ package es.etg.dam.partida;
 
 import java.net.Socket;
 
+import lombok.Getter;
+
+@Getter
 public class Jugador {
 
     private String nombre;
@@ -9,12 +12,12 @@ public class Jugador {
     private Socket conexion;
 
     public Jugador(String nombre, Socket conexion) {
-        nombre = this.nombre;
-        conexion = this.conexion;
+        this.nombre = nombre;
+        this.conexion = conexion;
     }
 
     public void sumar(int puntos) {
-        puntos += this.puntos;
+        this.puntos += puntos;
     }
 
 }
