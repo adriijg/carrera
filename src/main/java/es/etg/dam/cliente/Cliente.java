@@ -17,7 +17,7 @@ public class Cliente {
     private static final String MSG_REGISTRO = "Registrado correctamente como: ";
     public static final String MSG_GANADO = "ENHORABUENA";
     public static final String MSG_PERDIDO = "GAME OVER";
-    private static final String MSG_PUNTOS = "Estado de la carrera == ";
+    private static final String MSG_PUNTOS = "Estado de la carrera = ";
 
     public static void main(String[] args) throws IOException {
 

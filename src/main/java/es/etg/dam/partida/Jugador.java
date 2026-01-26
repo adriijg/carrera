@@ -5,8 +5,10 @@ import java.net.Socket;
 import lombok.Getter;
 
 @Getter
+
 public class Jugador {
 
+    private static final int CIEN = 100;
     private String nombre;
     private int puntos;
     private Socket conexion;
@@ -18,9 +20,8 @@ public class Jugador {
 
     public void sumar(int puntos) {
         this.puntos += puntos;
-        if (this.puntos > 100) {
-            this.puntos = 100;
+        if (this.puntos > CIEN) {
+            this.puntos = CIEN;
         }
     }
-
 }
