@@ -30,12 +30,10 @@ public class Servidor {
 
                     jugadores[i] = new Jugador(nombre, socket);
                     System.out.println(String.format(MSG_JUGADOR_REGISTRADO, nombre));
-                    socket.close();
                 }
 
                 Thread carrera = new Thread(new Carrera(jugadores));
                 carrera.start();
-
             }
         }
     }

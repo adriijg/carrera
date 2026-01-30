@@ -12,7 +12,7 @@ public class Carrera implements Runnable {
     private static final int TIEMPO = 2000;
     private static final int UNO = 1;
     private static final int CERO = 0;
-    private static final String FORMATO = "%s:%d|";
+    private static final String FORMATO = "%s%s:%d|";
 
     private Jugador[] jugadores;
 
@@ -25,7 +25,7 @@ public class Carrera implements Runnable {
         try {
             Thread.sleep(TIEMPO);
         } catch (InterruptedException e) {
-            new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
         Jugador ganador = null;
@@ -36,7 +36,7 @@ public class Carrera implements Runnable {
             try {
                 notificar();
             } catch (IOException e) {
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
 
             if (jugadorActual.getPuntos() >= MAX_PUNTOS) {
@@ -53,8 +53,9 @@ public class Carrera implements Runnable {
         return jugador;
     }
 
+    private final Random random = new Random();
+
     private int generarNumero(int min, int max) {
-        Random random = new Random();
         return random.nextInt(max - min + UNO) + min;
     }
 
@@ -75,11 +76,11 @@ public class Carrera implements Runnable {
 
     }
 
-    private String obtenerEstadoCarrera() throws IOException {
+    private String obtenerEstadoCarrera() {
         String estado = "";
 
         for (Jugador jugador : jugadores) {
-            estado += String.format(FORMATO, jugador.getNombre(), jugador.getPuntos());
+            estado = String.format(FORMATO, estado, jugador.getNombre(), jugador.getPuntos());
         }
 
         return estado;

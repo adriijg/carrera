@@ -25,6 +25,7 @@ public class Cliente {
 
         try (Socket cliente = new Socket(Servidor.HOST, Servidor.PUERTO)) {
 
+            Conexion.enviar(nombre, cliente);
             boolean registrado = false;
 
             String respuesta = Conexion.recibir(cliente);
