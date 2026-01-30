@@ -11,8 +11,8 @@ public class Carrera implements Runnable {
     private static final int MAX_AVANCE = 10;
     private static final int TIEMPO = 2000;
     private static final int UNO = 1;
-    private final String PUNTOS = ":";
-    private final String BARRA = "|";
+    private static final int CERO = 0;
+    private static final String FORMATO = "%s:%d|";
 
     private Jugador[] jugadores;
 
@@ -25,63 +25,76 @@ public class Carrera implements Runnable {
         try {
             Thread.sleep(TIEMPO);
         } catch (InterruptedException e) {
-            System.err.println(e.getMessage());
+            new RuntimeException(e);
         }
 
         Jugador ganador = null;
 
         while (ganador == null) {
-            Jugador j = avanzar();
+            Jugador jugadorActual = avanzar();
 
             try {
-                notificar(j);
-            } catch (IOException ex) {
+                notificar();
+            } catch (IOException e) {
+                new RuntimeException(e);
             }
 
-            if (j.getPuntos() >= MAX_PUNTOS) {
-                ganador = j;
+            if (jugadorActual.getPuntos() >= MAX_PUNTOS) {
+                ganador = jugadorActual;
             }
         }
         finalizar(ganador);
     }
 
     private Jugador avanzar() {
-        int jug = random.nextInt(Servidor.NUM_JUG);
-        int puntos = random.nextInt(MAX_AVANCE) + UNO;
-        jugadores[jug].sumar(puntos);
-        return jugadores[jug];
+        Jugador jugador = jugadorAleatorio();
+        int puntos = puntosAleatorios();
+        jugador.sumar(puntos);
+        return jugador;
     }
 
-    private void notificar(Jugador jugador) throws IOException {
-        String msg = obtenerPuntos();
-        Conexion.enviar(msg, jugador.getConexion());
-
+    private int generarNumero(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max - min + UNO) + min;
     }
 
-    private String obtenerPuntos() throws IOException {
-        StringBuilder sb = new StringBuilder();
+    private Jugador jugadorAleatorio() {
+        int posicion = generarNumero(CERO, jugadores.length - UNO);
+        return jugadores[posicion];
+    }
 
-        for (Jugador j : jugadores) {
-            sb.append(j.getNombre());
-            sb.append(PUNTOS);
-            sb.append(j.getPuntos());
-            sb.append(BARRA);
+    private int puntosAleatorios() {
+        return generarNumero(UNO, MAX_AVANCE);
+    }
+
+    private void notificar() throws IOException {
+        String estado = obtenerEstadoCarrera();
+        for (Jugador jugador : jugadores) {
+            Conexion.enviar(estado, jugador.getConexion());
         }
 
-        return sb.toString();
+    }
+
+    private String obtenerEstadoCarrera() throws IOException {
+        String estado = "";
+
+        for (Jugador jugador : jugadores) {
+            estado += String.format(FORMATO, jugador.getNombre(), jugador.getPuntos());
+        }
+
+        return estado;
     }
 
     private void finalizar(Jugador ganador) {
-        for (Jugador j : jugadores) {
+        for (Jugador jugador : jugadores) {
             try {
-                if (j == ganador) {
-                    Conexion.enviar(Cliente.MSG_GANADO, j.getConexion());
-                } else {
-                    Conexion.enviar(Cliente.MSG_PERDIDO, j.getConexion());
-                }
-                j.getConexion().close();
+                String mensaje = (jugador == ganador) ? Cliente.MSG_GANADO : Cliente.MSG_PERDIDO;
+
+                Conexion.enviar(mensaje, jugador.getConexion());
+                jugador.getConexion().close();
 
             } catch (IOException e) {
+                new RuntimeException(e);
             }
         }
     }
