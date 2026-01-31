@@ -20,21 +20,19 @@ public class Servidor {
 
         try (ServerSocket server = new ServerSocket(PUERTO)) {
 
-            while (true) {
-                Jugador[] jugadores = new Jugador[MAX_JUGADORES];
+            Jugador[] jugadores = new Jugador[MAX_JUGADORES];
 
-                for (int i = 0; i < MAX_JUGADORES; i++) {
-                    Socket socket = server.accept();
-                    String nombre = Conexion.recibir(socket);
-                    Conexion.enviar(Cliente.OK, socket);
+            for (int i = 0; i < MAX_JUGADORES; i++) {
+                Socket socket = server.accept();
+                String nombre = Conexion.recibir(socket);
+                Conexion.enviar(Cliente.OK, socket);
 
-                    jugadores[i] = new Jugador(nombre, socket);
-                    System.out.println(String.format(MSG_JUGADOR_REGISTRADO, nombre));
-                }
-
-                Thread carrera = new Thread(new Carrera(jugadores));
-                carrera.start();
+                jugadores[i] = new Jugador(nombre, socket);
+                System.out.println(String.format(MSG_JUGADOR_REGISTRADO, nombre));
             }
+
+            Thread carrera = new Thread(new Carrera(jugadores));
+            carrera.start();
         }
     }
 }

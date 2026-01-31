@@ -10,11 +10,13 @@ public class Carrera implements Runnable {
     private static final int MAX_PUNTOS = 100;
     private static final int MAX_AVANCE = 10;
     private static final int TIEMPO = 2000;
+    private static final int TIEMPO_TURNOS = 300;
     private static final int UNO = 1;
     private static final int CERO = 0;
     private static final String FORMATO = "%s%s:%d|";
 
-    private Jugador[] jugadores;
+    private final Random random = new Random();
+    private final Jugador[] jugadores;
 
     public Carrera(Jugador[] jugadores) {
         this.jugadores = jugadores;
@@ -42,6 +44,11 @@ public class Carrera implements Runnable {
             if (jugadorActual.getPuntos() >= MAX_PUNTOS) {
                 ganador = jugadorActual;
             }
+            try {
+                Thread.sleep(TIEMPO_TURNOS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         finalizar(ganador);
     }
@@ -52,8 +59,6 @@ public class Carrera implements Runnable {
         jugador.sumar(puntos);
         return jugador;
     }
-
-    private final Random random = new Random();
 
     private int generarNumero(int min, int max) {
         return random.nextInt(max - min + UNO) + min;
