@@ -1,6 +1,8 @@
 package es.etg.dam.partida;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 
 import es.etg.dam.cliente.Cliente;
@@ -16,10 +18,10 @@ public class Carrera implements Runnable {
     private static final String FORMATO = "%s%s:%d|";
 
     private final Random random = new Random();
-    private final Jugador[] jugadores;
+    private final ArrayList<Jugador> jugadores;
 
-    public Carrera(Jugador[] jugadores) {
-        this.jugadores = jugadores;
+    public Carrera() {
+        jugadores = new ArrayList<>();
     }
 
     @Override
@@ -65,8 +67,8 @@ public class Carrera implements Runnable {
     }
 
     private Jugador jugadorAleatorio() {
-        int posicion = generarNumero(CERO, jugadores.length - UNO);
-        return jugadores[posicion];
+        int posicion = generarNumero(CERO, jugadores.size() - UNO);
+        return jugadores.get(posicion);
     }
 
     private int puntosAleatorios() {
@@ -78,7 +80,6 @@ public class Carrera implements Runnable {
         for (Jugador jugador : jugadores) {
             Conexion.enviar(estado, jugador.getConexion());
         }
-
     }
 
     private String obtenerEstadoCarrera() {
@@ -91,18 +92,29 @@ public class Carrera implements Runnable {
         return estado;
     }
 
+    // Intentar este metodo para codigo repetido String mensaje = (jugador
+    // ==ganador) ? Cliente.MSG_GANADO : Cliente.MSG_PERDIDO;
+
     private void finalizar(Jugador ganador) {
         for (Jugador jugador : jugadores) {
+            String mensaje;
             try {
-                String mensaje = (jugador == ganador) ? Cliente.MSG_GANADO : Cliente.MSG_PERDIDO;
-
+                if (jugador == ganador) {
+                    mensaje = Cliente.MSG_GANADO;
+                } else {
+                    mensaje = Cliente.MSG_PERDIDO;
+                }
                 Conexion.enviar(mensaje, jugador.getConexion());
                 jugador.getConexion().close();
 
             } catch (IOException e) {
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    public void registrarJugadores(String nombre, Socket socket) {
+        jugadores.add(new Jugador(nombre, socket));
     }
 
 }
