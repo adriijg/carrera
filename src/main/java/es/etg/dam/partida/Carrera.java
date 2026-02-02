@@ -3,6 +3,7 @@ package es.etg.dam.partida;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import es.etg.dam.cliente.Cliente;
@@ -17,8 +18,9 @@ public class Carrera implements Runnable {
     private static final int UNO = 1;
     private static final int CERO = 0;
     private static final String FORMATO = "%s%s: %d | ";
+    private static final String ASTEDISCO = "*";
 
-    private final ArrayList<Jugador> jugadores;
+    private final List<Jugador> jugadores;
 
     public Carrera() {
         jugadores = new ArrayList<>();
@@ -28,31 +30,25 @@ public class Carrera implements Runnable {
     public void run() {
         try {
             Thread.sleep(TIEMPO);
-        } catch (InterruptedException e) {
+
+            Jugador ganador = null;
+
+            while (ganador == null) {
+                Jugador jugadorActual = avanzar();
+
+                notificar(jugadorActual);
+
+                if (jugadorActual.hasGanado()) {
+                    ganador = jugadorActual;
+                }
+                Thread.sleep(TIEMPO_TURNOS);
+
+            }
+            finalizar(ganador);
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        Jugador ganador = null;
-
-        while (ganador == null) {
-            Jugador jugadorActual = avanzar();
-
-            try {
-                notificar();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (jugadorActual.getPuntos() >= MAX_PUNTOS) {
-                ganador = jugadorActual;
-            }
-            try {
-                Thread.sleep(TIEMPO_TURNOS);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        finalizar(ganador);
     }
 
     private Jugador avanzar() {
@@ -72,40 +68,30 @@ public class Carrera implements Runnable {
         return jugadores.get(posicion);
     }
 
-    private void notificar() throws IOException {
-        String estado = obtenerEstadoCarrera();
-        for (Jugador jugador : jugadores) {
-            Conexion.enviar(estado, jugador.getConexion());
+    private void notificar(Jugador jugador) throws IOException {
+        String estado = obtenerEstadoCarrera(jugador);
+        for (Jugador jug : jugadores) {
+            Conexion.enviar(estado, jug.getConexion());
         }
     }
 
-    private String obtenerEstadoCarrera() {
+    private String obtenerEstadoCarrera(Jugador jugador) {
         String estado = "";
 
-        for (Jugador jugador : jugadores) {
-            estado = String.format(FORMATO, estado, jugador.getNombre(), jugador.getPuntos());
+        for (Jugador jug : jugadores) {
+            String marca = (jug == jugador) ? ASTEDISCO : "";
+            estado = String.format(FORMATO, estado, jug.getNombre() + marca, jug.getPuntos());
         }
 
         return estado;
     }
 
-    // String mensaje = (jugador ==ganador) ? Cliente.MSG_GANADO :
-    // Cliente.MSG_PERDIDO;
-    private void finalizar(Jugador ganador) {
+    private void finalizar(Jugador ganador) throws IOException {
         for (Jugador jugador : jugadores) {
-            String mensaje;
-            try {
-                if (jugador == ganador) {
-                    mensaje = Cliente.MSG_GANADO;
-                } else {
-                    mensaje = Cliente.MSG_PERDIDO;
-                }
-                Conexion.enviar(mensaje, jugador.getConexion());
-                jugador.getConexion().close();
+            String mensaje = (jugador == ganador) ? Cliente.MSG_GANADO : Cliente.MSG_PERDIDO;
+            Conexion.enviar(mensaje, jugador.getConexion());
+            jugador.getConexion().close();
 
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
