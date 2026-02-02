@@ -13,7 +13,7 @@ public class Cliente {
     public static final String MSG_GANADO = "ENHORABUENA";
     public static final String MSG_PERDIDO = "GAME OVER";
     private static final String MSG_PUNTOS = "Estado de la carrera = %s";;
-    private static final String FLECHA = "%s -> %s";
+    private static final String MSG_FINAL = "%s -> %s";
 
     public static void main(String[] args) throws IOException {
 
@@ -33,7 +33,7 @@ public class Cliente {
                 String mensaje = Conexion.recibir(cliente);
 
                 if (mensaje.equals(MSG_PERDIDO) || mensaje.equals(MSG_GANADO)) {
-                    System.out.println(String.format(nombre + " -> " + mensaje));
+                    System.out.println(String.format(MSG_FINAL, nombre, mensaje));
                     salir = true;
                 } else {
                     System.out.println(String.format(MSG_PUNTOS, mensaje));
