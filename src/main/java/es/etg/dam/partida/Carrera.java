@@ -11,14 +11,13 @@ import es.etg.dam.common.Conexion;
 
 public class Carrera implements Runnable {
 
-    private static final int MAX_PUNTOS = 100;
     private static final int MAX_AVANCE = 10;
     private static final int TIEMPO = 2000;
     private static final int TIEMPO_TURNOS = 300;
     private static final int UNO = 1;
     private static final int CERO = 0;
     private static final String FORMATO = "%s%s: %d | ";
-    private static final String ASTEDISCO = "*";
+    private static final String ASTERISCO = "*";
 
     private final List<Jugador> jugadores;
 
@@ -31,15 +30,17 @@ public class Carrera implements Runnable {
         try {
             Thread.sleep(TIEMPO);
 
+            boolean salir = false;
             Jugador ganador = null;
 
-            while (ganador == null) {
+            while (!salir) {
                 Jugador jugadorActual = avanzar();
 
                 notificar(jugadorActual);
 
                 if (jugadorActual.hasGanado()) {
                     ganador = jugadorActual;
+                    salir = true;
                 }
                 Thread.sleep(TIEMPO_TURNOS);
 
@@ -79,10 +80,9 @@ public class Carrera implements Runnable {
         String estado = "";
 
         for (Jugador jug : jugadores) {
-            String marca = (jug == jugador) ? ASTEDISCO : "";
+            String marca = (jug == jugador) ? ASTERISCO : "";
             estado = String.format(FORMATO, estado, jug.getNombre() + marca, jug.getPuntos());
         }
-
         return estado;
     }
 
