@@ -13,7 +13,6 @@ public class Cliente {
     public static final String MSG_GANADO = "ENHORABUENA";
     public static final String MSG_PERDIDO = "GAME OVER";
     private static final String MSG_PUNTOS = "Estado de la carrera = %s";
-    ;
     private static final String MSG_FINAL = "%s -> %s";
 
     public static void main(String[] args) throws IOException {
