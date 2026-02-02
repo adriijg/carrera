@@ -12,7 +12,7 @@ public class Servidor {
 
     public static final String HOST = "localhost";
     public static final int PUERTO = 8888;
-    public final static int MAX_JUGADORES = 4;
+    public static final int MAX_JUGADORES = 4;
 
     public static void main(String[] args) throws IOException {
 

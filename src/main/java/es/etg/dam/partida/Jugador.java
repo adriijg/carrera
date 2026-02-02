@@ -5,7 +5,6 @@ import java.net.Socket;
 import lombok.Getter;
 
 @Getter
-
 public class Jugador {
 
     private static final int CIEN = 100;

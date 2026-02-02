@@ -57,7 +57,7 @@ public class Carrera implements Runnable {
 
     private Jugador avanzar() {
         Jugador jugador = jugadorAleatorio();
-        int puntos = puntosAleatorios();
+        int puntos = generarNumero(UNO, MAX_AVANCE);
         jugador.sumar(puntos);
         return jugador;
     }
@@ -71,15 +71,9 @@ public class Carrera implements Runnable {
         return jugadores.get(posicion);
     }
 
-    private int puntosAleatorios() {
-        return generarNumero(UNO, MAX_AVANCE);
-    }
-
     private void notificar() throws IOException {
         String estado = obtenerEstadoCarrera();
-        for (Jugador jugador : jugadores) {
-            Conexion.enviar(estado, jugador.getConexion());
-        }
+        Conexion.enviar(estado, jugadores.get(0).getConexion());
     }
 
     private String obtenerEstadoCarrera() {
