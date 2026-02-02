@@ -9,6 +9,7 @@ import es.etg.dam.cliente.Cliente;
 import es.etg.dam.common.Conexion;
 
 public class Carrera implements Runnable {
+
     private static final int MAX_PUNTOS = 100;
     private static final int MAX_AVANCE = 10;
     private static final int TIEMPO = 2000;
@@ -73,7 +74,9 @@ public class Carrera implements Runnable {
 
     private void notificar() throws IOException {
         String estado = obtenerEstadoCarrera();
-        Conexion.enviar(estado, jugadores.get(0).getConexion());
+        for (Jugador jugador : jugadores) {
+            Conexion.enviar(estado, jugador.getConexion());
+        }
     }
 
     private String obtenerEstadoCarrera() {
@@ -88,7 +91,6 @@ public class Carrera implements Runnable {
 
     // String mensaje = (jugador ==ganador) ? Cliente.MSG_GANADO :
     // Cliente.MSG_PERDIDO;
-
     private void finalizar(Jugador ganador) {
         for (Jugador jugador : jugadores) {
             String mensaje;
