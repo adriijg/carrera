@@ -15,9 +15,8 @@ public class Carrera implements Runnable {
     private static final int TIEMPO_TURNOS = 300;
     private static final int UNO = 1;
     private static final int CERO = 0;
-    private static final String FORMATO = "%s%s:%d|";
+    private static final String FORMATO = "%s%s: %d | ";
 
-    private final Random random = new Random();
     private final ArrayList<Jugador> jugadores;
 
     public Carrera() {
@@ -63,6 +62,7 @@ public class Carrera implements Runnable {
     }
 
     private int generarNumero(int min, int max) {
+        Random random = new Random();
         return random.nextInt(max - min + UNO) + min;
     }
 
@@ -86,8 +86,8 @@ public class Carrera implements Runnable {
         return estado;
     }
 
-    // Intentar este metodo para codigo repetido String mensaje = (jugador
-    // ==ganador) ? Cliente.MSG_GANADO : Cliente.MSG_PERDIDO;
+    // String mensaje = (jugador ==ganador) ? Cliente.MSG_GANADO :
+    // Cliente.MSG_PERDIDO;
 
     private void finalizar(Jugador ganador) {
         for (Jugador jugador : jugadores) {
